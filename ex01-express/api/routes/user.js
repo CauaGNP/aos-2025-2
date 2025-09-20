@@ -3,23 +3,51 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/", (req, res) => {
-  return res.send(Object.values(req.context.models.users));
+  const { users } = req.context.models;
+
+  return res.status(200).send({
+    "data" : users,
+  });
 });
 
 router.get("/:userId", (req, res) => {
-  return res.send(req.context.models.users[req.params.userId]);
+  const { userId } = req.params
+
+  if(!userId){
+    return res.status(400).json({
+      error: "Id não informado"
+    })
+  }
+
+  return res.status(200).send(req.context.models.users[userId]);
 });
 
 router.post("/", (req, res) => {
-  return res.send("POST HTTP method on user resource");
+  return res.status(201).send("POST HTTP method on user resource");
 });
 
 router.put("/:userId", (req, res) => {
-  return res.send(`PUT HTTP method on user/${req.params.userId} resource`);
+  const { userId } = req.params
+
+  if(!userId){
+    return res.status(400).json({
+      error: "Id não informado"
+    })
+  }
+
+  return res.status(200).send(`PUT HTTP method on user/${userId} resource`);
 });
 
 router.delete("/:userId", (req, res) => {
-  return res.send(`DELETE HTTP method on user/${req.params.userId} resource`);
+  const { userId } = req.params
+
+  if(!userId){
+    return res.status(400).json({
+      error: "Id não informado"
+    })
+  }
+
+  return res.status(200).send(`DELETE HTTP method on user/${userId} resource`);
 });
 
 export default router;
