@@ -1,5 +1,6 @@
 import Sequelize from "sequelize";
 
+import pg from "pg";
 import getMessageModel from "./message.js";
 import getUserModel from "./user.js";
 
@@ -15,7 +16,7 @@ const sequelize = new Sequelize(process.env.POSTGRES_URL, {
       rejectUnauthorized: false,
     },
   },
-  dialectModule: require("pg"),
+  dialectModule: pg,
 });
 
 const models = {
