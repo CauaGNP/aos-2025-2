@@ -96,7 +96,7 @@ router.delete("/:userId", async (req, res) => {
     }
   })
 
-  return res.status(200).send({
+  return res.status(204).send({
     message : "Usuário deletado com sucesso!!"
   });
 });
