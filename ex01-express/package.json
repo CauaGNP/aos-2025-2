@@ -11,6 +11,7 @@
     "express",
     "postgres"
   ],
+  "type": "module",
   "author": "Marcio Bueno",
   "license": "MIT",
   "dependencies": {
