@@ -1,53 +1,104 @@
 import { Router } from "express";
+import models from "../models";
 
 const router = Router();
+const users = models.User;
 
-router.get("/", (req, res) => {
-  const { users } = req.context.models;
+router.get("/", async (req, res) => {
+  const allUsers = await users.findAll();
 
   return res.status(200).send({
-    "data" : users,
+    "data" : allUsers,
   });
 });
 
-router.get("/:userId", (req, res) => {
-  const { userId } = req.params
+router.get("/:userId", async (req, res) => {
+  const { userId } = req.params;
 
-  if(!userId){
-    return res.status(400).json({
-      error: "Id não informado"
+
+  const getUser = await users.findByPk(userId);
+
+  if(!getUser){
+    return res.status(404).send({
+      error: "Usuário não encointrado",
+    });
+  }
+  return res.status(200).send({
+    message : "Usuário encontrado",
+    data : getUser
+  });
+});
+
+router.post("/", async (req, res) => {
+  const { username,email } = req.body;
+
+  if(!username || !email){
+    return res.status(400).send({
+      error : "Preencha os campos obrigatórios!!"
+    })
+  }
+  
+  const newUserData = {
+    email,
+    username 
+  }
+
+  const newUser = await users.create(newUserData);
+  
+  return res.status(201).send({
+    message : "Usário criado",
+    data : newUser
+  });
+});
+
+router.put("/:userId", async(req, res) => {
+  const { userId } = req.params
+  const { username,email } = req.body;
+
+  const userExist = await users.findByPk(userId);
+
+  if(!userExist){
+    return res.status(404).send({
+      error: "Usuário não encontrado!!"
     })
   }
 
-  return res.status(200).send(req.context.models.users[userId]);
+  const newUserData = {
+    email : email,
+    username: username 
+  }
+
+  await users.update(newUserData, {where: {
+    id : userId
+  }})
+
+  return res.status(200).send({
+    message : "Usuário atualizado",
+    data : newUserData,
+  });
 });
 
-router.post("/", (req, res) => {
-  return res.status(201).send("POST HTTP method on user resource");
-});
+router.delete("/:userId", async (req, res) => {
+  const { userId } = req.params;
 
-router.put("/:userId", (req, res) => {
-  const { userId } = req.params
+  const userExist = await users.findByPk(userId);
 
-  if(!userId){
-    return res.status(400).json({
-      error: "Id não informado"
+  if(!userExist){
+    return res.status(404).send({
+      error: "Usuário não encontrado!!"
     })
   }
 
-  return res.status(200).send(`PUT HTTP method on user/${userId} resource`);
-});
 
-router.delete("/:userId", (req, res) => {
-  const { userId } = req.params
+  await users.destroy({
+    where:{
+      id : userId,
+    }
+  })
 
-  if(!userId){
-    return res.status(400).json({
-      error: "Id não informado"
-    })
-  }
-
-  return res.status(200).send(`DELETE HTTP method on user/${userId} resource`);
+  return res.status(200).send({
+    message : "Usuário deletado com sucesso!!"
+  });
 });
 
 export default router;

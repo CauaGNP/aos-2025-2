@@ -1,52 +1,90 @@
-import { v4 as uuidv4 } from "uuid";
 import { Router } from "express";
+import models from "../models";
 
 const router = Router();
+const messagesModel = models.Message;
 
-router.get("/", (req, res) => {
-  return res.status(200).send(Object.values(req.context.models.messages));
+router.get("/", async (req, res) => {
+  const getMessages = await messagesModel.findAll();
+
+  return res.status(200).send({
+    message : "Exibindo todas as mensagens",
+    data : getMessages
+  });
 });
 
-router.get("/:messageId", (req, res) => {
+router.get("/:messageId", async (req, res) => {
   const { messageId } = req.params;
 
-  if(!messageId){
-    return res.status(400).json({
-      error : "Id não informado"
+  const getMessage = await messagesModel.findByPk(messageId);
+
+  if(!getMessage){
+    return res.status(404).send({
+      error : "Mensagem não encontrada"
     })
   }
 
-  return res.status(200).send(req.context.models.messages[messageId]);
+  return res.status(200).send({
+    message : "Mensagem encontrada",
+    data : getMessage,
+  });
 });
 
-router.post("/", (req, res) => {
-  const id = uuidv4();
+router.post("/", async (req, res) => {
+  const { text } = req.body
+
   const message = {
-    id,
-    text: req.body.text,
+    text: text,
     userId: req.context.me.id,
   };
 
-  req.context.models.messages[id] = message;
+  if(!text || !req.context.me?.id){
+    return res.status(400).send({error : "Por favor preencha os campos ou efetue o seu login!!"})
+  }
 
-  return res.status(201).send(message);
+  const createdMessage = await messagesModel.create(message);
+
+  return res.status(201).send({
+    message : "Mensagem enviada",
+    data : createdMessage
+  });
 });
 
-router.delete("/:messageId", (req, res) => {
+router.put("/:messageId", async (req, res) => {
+  const { messageId } = req.params;
+  const { text } = req.body;
+
+  const getMessage = await messagesModel.findByPk(messageId);
+  if(!getMessage){
+    return res.status(404).send({
+      error : "Mensagem não encontrada"
+    })}
+
+  await messagesModel.update({text}, {where: {
+    id : messageId
+  }})
+
+  return res.status(200).send({
+    message : "A mensagem foi atualizada"
+  })
+})
+
+router.delete("/:messageId", async (req, res) => {
   const { messageId } = req.params;
 
-  if(!messageId){
-    return res.status(400).json({
-      error : "Id não informado"
+  const getMessage = await messagesModel.findByPk(messageId);
+
+  if(!getMessage){
+    return res.status(404).send({
+      error : "Mensagem não encontrada"
     })
   }
 
-  const { [messageId]: message, ...otherMessages } =
-    req.context.models.messages;
+  await messagesModel.destroy({where : {id : messageId}});
 
-  req.context.models.messages = otherMessages;
-
-  return res.status(200).send(message);
+  return res.status(200).send({
+    message : "Mensagem deletada"
+  });
 });
 
 export default router;
