@@ -1,9 +1,9 @@
-import "dotenv/config";
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
 
-import models, { sequelize } from "./models";
-import routes from "./routes";
+import models, { sequelize } from "./models/index.js";
+import routes from "./routes/index.js";
 
 const app = express();
 app.set("trust proxy", true);
