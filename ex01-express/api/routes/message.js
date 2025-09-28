@@ -112,7 +112,7 @@ router.delete("/:messageId", async (req, res) => {
 
     await messagesModel.destroy({where : {id : messageId}});
 
-    return res.status(200).send({
+    return res.status(204).send({
       message : "Mensagem deletada"
     });
   } catch (error) {
