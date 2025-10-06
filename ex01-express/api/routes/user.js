@@ -1,5 +1,6 @@
 import { Router } from "express";
 import models from "../models/index.js";
+import bcrypt from "bcrypt";
 
 const router = Router();
 const users = models.User;
@@ -44,18 +45,19 @@ router.get("/:userId", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { username,email } = req.body;
+    const { username,email, password } = req.body;
 
-    if(!username || !email){
+    if(!username || !email || !password){
       return res.status(400).send({
         error : "Preencha os campos obrigatórios!!"
       })
     }
-    
+    const hashPassword = await bcrypt.hash(password, 10);
     const newUserData = {
       email,
-      username 
-    }
+      username,
+      hashPassword
+      }
 
     const newUser = await users.create(newUserData);
     

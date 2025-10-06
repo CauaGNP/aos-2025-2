@@ -1,6 +1,7 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import bcrypt from "bcrypt";
 
 import models, { sequelize } from "./models/index.js";
 import routes from "./routes/index.js";
@@ -58,6 +59,7 @@ const createUsersWithMessages = async () => {
     {
       username: "rwieruch",
       email: "rwieruch@email.com",
+      password : await bcrypt.hash("teste1", 10),
       messages: [
         {
           text: "Published the Road to learn React",
@@ -76,6 +78,7 @@ const createUsersWithMessages = async () => {
     {
       username: "ddavids",
       email: "ddavids@email.com",
+      password : await bcrypt.hash("teste1", 10),
       messages: [
         {
           text: "Happy to release ...",
