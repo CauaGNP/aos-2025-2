@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import models from "../models";
 import bcrypt from "bcrypt";
 import "dotenv/config";
+import jwt from "jsonwebtoken";
+import models from "../models/index.js";
 
 const users = models.User;
 
