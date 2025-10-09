@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import models from "../models";
+import models from "../models/index.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 
@@ -14,8 +14,8 @@ const auth = async (req, res) => {
             return res.status(401).send({ error : "Usuário não cadastrado"});
         }
 
-        const hashPassword = await bcrypt.hash(password, 10);
-        if(user.password != hashPassword){
+        const verifyPassword = await bcrypt.compare(password, user.password);
+        if(verifyPassword){
             return res.status(401).send({
                 error : "Senha errada"
             })
