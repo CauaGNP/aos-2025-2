@@ -15,7 +15,7 @@ const auth = async (req, res) => {
         }
 
         const verifyPassword = await bcrypt.compare(password, user.password);
-        if(verifyPassword){
+        if(!verifyPassword){
             return res.status(401).send({
                 error : "Senha errada"
             })
