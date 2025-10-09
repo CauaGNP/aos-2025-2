@@ -8,7 +8,7 @@ const users = models.User;
 const auth = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await users.findAll({where : { email }});   
+        const user = await users.findOne({where : { email }});   
         
         if(!user){
             return res.status(401).send({ error : "Usuário não cadastrado"});
