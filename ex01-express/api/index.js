@@ -39,7 +39,8 @@ app.use("/session", routes.session);
 app.use("/users", routes.user);
 app.use("/messages", routes.message);
 app.use("/task", routes.task);
-app.use("/auth", routes.auth)
+app.use("/auth", routes.auth);
+
 
 const port = process.env.PORT ?? 3000;
 

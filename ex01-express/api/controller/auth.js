@@ -8,14 +8,14 @@ const users = models.User;
 const auth = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await users.findAll({where : { email }});   
+        const user = await users.findOne({where : { email }});   
         
         if(!user){
             return res.status(401).send({ error : "Usuário não cadastrado"});
         }
 
-        const hashPassword = await bcrypt.hash(password, 10);
-        if(user.password != hashPassword){
+        const verifyPassword = await bcrypt.compare(password, user.password);
+        if(!verifyPassword){
             return res.status(401).send({
                 error : "Senha errada"
             })
@@ -23,7 +23,7 @@ const auth = async (req, res) => {
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, {
         expiresIn: '1h',
         });
-
+    
         res.status(200).send({
             message: "logado com sucesso",
             token
